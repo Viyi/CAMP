@@ -1,3 +1,5 @@
+package com.unknown.CAMP;
+
 
 public class Camper {
 	

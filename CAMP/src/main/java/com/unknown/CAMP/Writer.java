@@ -5,37 +5,59 @@ import  org.apache.poi.hssf.usermodel.HSSFSheet;
 import  org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import  org.apache.poi.hssf.usermodel.HSSFRow;
 public class Writer {
+	 HSSFWorkbook workbook = new HSSFWorkbook();
+     HSSFSheet sheet = workbook.createSheet("FirstSheet");    
+	
+	private int rowNum = 1;
+	public Writer() {
+		 
+         HSSFRow rowhead = sheet.createRow((short)0);
+         rowhead.createCell(0).setCellValue("Name");
+         rowhead.createCell(1).setCellValue("Gender");
+         rowhead.createCell(2).setCellValue("Grade");
+         rowhead.createCell(3).setCellValue("Cabin");
+         rowhead.createCell(4).setCellValue("Small Group");
+	}
+	
+	public void endSpreadsheet() throws Exception {
+		String filename = "NewExelFile.xls" ;
+		
+		FileOutputStream fileOut = new FileOutputStream(filename);
 
+		workbook.write(fileOut);
+         fileOut.close();
+         workbook.close();
+         System.out.println("File has been generated!");
+	}
+	
+	public void writeCamper(Camper c) {
+		
+		HSSFRow row = sheet.createRow((short)rowNum);
+         row.createCell(0).setCellValue(c.getName());
+         if(c.getGender() == 2) {
+        	 row.createCell(1).setCellValue("Female");
+         }else {
+        	 row.createCell(1).setCellValue("Male");
+         }
+         
+         row.createCell(2).setCellValue(c.getGrade());
+         row.createCell(3).setCellValue(c.getCabin());
+         row.createCell(4).setCellValue(c.getGroup());
+         rowNum++;
+	}
+	
+	
+	
 	 public static void main(String[]args) {
-	        try {
-	            String filename = "NewExelFile.xls" ;
-	            HSSFWorkbook workbook = new HSSFWorkbook();
-	            HSSFSheet sheet = workbook.createSheet("FirstSheet");  
-
-	            HSSFRow rowhead = sheet.createRow((short)0);
-	            rowhead.createCell(0).setCellValue("Name");
-	            rowhead.createCell(1).setCellValue("Gender");
-	            rowhead.createCell(2).setCellValue("Grade");
-	            rowhead.createCell(3).setCellValue("Cabin");
-	            rowhead.createCell(4).setCellValue("Small Group");
-	           
-
-	            HSSFRow row = sheet.createRow((short)1);
-	            row.createCell(0).setCellValue("Arthur");
-	            row.createCell(1).setCellValue("Male");
-	            row.createCell(2).setCellValue("13");
-	            row.createCell(3).setCellValue("2");
-	            row.createCell(4).setCellValue("4");
-
-	            FileOutputStream fileOut = new FileOutputStream(filename);
-	            workbook.write(fileOut);
-	            fileOut.close();
-	            workbook.close();
-	            System.out.println("Your excel file has been generated!");
-
-	        } catch ( Exception ex ) {
-	            System.out.println(ex);
-	        }
+		 Writer w = new Writer();
+	       w.writeCamper(null);
+	       w.writeCamper(null);
+	       try {
+			w.endSpreadsheet();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    }
 }
 

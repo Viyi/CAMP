@@ -1,21 +1,25 @@
 package com.unknown.CAMP;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Manager {
 
 	private ArrayList<Camper> fullRoster;
 	private ArrayList<ArrayList<Camper>> cabinRoster = new ArrayList<ArrayList<Camper>>(0);
+	private ArrayList<ArrayList<Camper>> overflowCabin = new ArrayList<ArrayList<Camper>>(0);
 	private ArrayList<ArrayList<Camper>> femaleChunks = new ArrayList<ArrayList<Camper>>(0);
 	private ArrayList<ArrayList<Camper>> maleChunks = new ArrayList<ArrayList<Camper>>(0);
-	private int maleCabins, femaleCabins, totalCampers, cabinMax;
+	private int maleCabins, femaleCabins, totalCampers, cabinMax,smallGroupNumber;
 
 	public Manager(ArrayList<Camper> a) {
 		fullRoster = a;
 		totalCampers = fullRoster.size();
 		maleCabins = 4;
 		femaleCabins = 4;
-		cabinMax = 13;
+		cabinMax = 10;
+		smallGroupNumber = 8;
 	}
 
 	public Manager(ArrayList<Camper> a, int mcabins, int fcabins) {
@@ -38,8 +42,8 @@ public class Manager {
 		ArrayList<Camper> temp = new ArrayList<Camper>(0);
 		// checks to see if everyone has been assigned to a chunk
 		if (fullRoster.size() < 1) {
-			System.out.println(maleChunks);
-			System.out.println(femaleChunks);
+			System.out.println("Male Chunks: " + maleChunks);
+			System.out.println("Female Chunks: "+femaleChunks);
 			return 1;
 		}
 		temp.add(fullRoster.remove(0));
@@ -68,11 +72,12 @@ public class Manager {
 		if (temp.get(0).getGender() == 1) {
 			maleChunks.add(temp);
 			// runs it again
-			chunkMaker();
+			return chunkMaker();
 		} else if (temp.get(0).getGender() == 2) {
+			System.out.println("Female");
 			femaleChunks.add(temp);
 			// runs it again
-			chunkMaker();
+			return chunkMaker();
 		}
 
 		// this should never be returned. but who knows
@@ -86,47 +91,188 @@ public class Manager {
 		// fill
 		ArrayList<ArrayList<Camper>> temp = new ArrayList<ArrayList<Camper>>(0);
 		ArrayList<ArrayList<Camper>> tempChunks = maleChunks;
+		
+		
+	
+		
 		for (int a = 0; a < 2; a++) {
 			if (mode == 1) {
-				temp.addAll(cabinCreator(tempChunks));
+				//Not operational
+				//temp.addAll(cabinCreator(tempChunks));
 			} else {
-
+				Collections.sort(tempChunks, new Comparator<ArrayList>(){
+				    public int compare(ArrayList a1, ArrayList a2) {
+				        return a2.size() - a1.size(); // assumes you want biggest to smallest
+				    }
+				});
+				System.out.println("Sorted Chunk: " + (a+1) + "" + tempChunks);
+				System.out.println("Starting Cabin Creation");
+				temp.addAll(cabinCreator(tempChunks));
+				System.out.println("Cabins Created: " + (a+1));
+				
+				
+				
+				
+				
 			}
+			tempChunks = femaleChunks;
 		}
+		cabinRoster.addAll(temp);
+		setCamperInfo();
 
 	}
 	
 	public ArrayList<ArrayList<Camper>> cabinCreator(ArrayList<ArrayList<Camper>> chunks){
 		ArrayList<ArrayList<Camper>> temp = new ArrayList<ArrayList<Camper>>(0);
-		int count = 0;
-		int tries = 0;
-		for(int a = 0;a<maleCabins;a++) {
-			for(int b = 0;b<cabinMax;b++) {
+		if(chunks.isEmpty()) {
+			return temp;
+		}
+		int tempGender = chunks.get(0).get(0).getGender();
+		
+		int cabinCount = 0;
+		int ascending = 1;
+		
+		if(tempGender == 1) {
+			int count = maleCabins - 1;
+			for(int a = 0;a<maleCabins;a++) {
+				temp.add(chunks.remove(0));
+				System.out.println("Creating initial cabins: " + a);
+			}
+			while(!chunks.isEmpty()) {
+				System.out.println("Is empty check");
+				cabinCount = temp.get(count).size();
 				
+				if(cabinCount + chunks.get(0).size() >= cabinMax) {
+					overflowCabin.add(chunks.remove(0));
+					System.out.println("Thow Cup Runneth Over.");
+				}else {
+					temp.get(count).addAll(chunks.remove(0));
+				}
+				
+				if(count == maleCabins-1 && count == 0) {
+					ascending = -1;
+				}else if(count == maleCabins-1) {
+					ascending = 1;
+				}else if(count == 0) {
+					ascending = 2;
+				}
+				if(ascending == 2) {
+					count++;
+				}else if(ascending == 1){
+					count--;
+				}
+			}
+		}else {
+			int count = femaleCabins - 1;
+			for(int a = 0;a<femaleCabins;a++) {
+				temp.add(chunks.remove(0));
+				System.out.println("Creating initial cabins: " + a);
+			}
+			while(!chunks.isEmpty()) {
+				cabinCount = temp.get(count).size();
+				
+				if(cabinCount + chunks.get(0).size() >= cabinMax) {
+					overflowCabin.add(chunks.remove(0));
+					System.out.println("Thow Cup Runneth Over.");
+				}else {
+					temp.get(count).addAll(chunks.remove(0));
+				}
+				
+				if(count == femaleCabins-1 && count == 0) {
+					ascending = -1;
+				}else if(count == femaleCabins-1) {
+					ascending = 1;
+				}else if(count == 0) {
+					ascending = 2;
+				}
+				if(ascending == 2) {
+					count++;
+				}else if(ascending == 1){
+					count--;
+				}
 			}
 		}
 		
+		
 		return temp;
 	}
+
+	public void setCamperInfo() {
+		Writer w = new Writer();
+		int count = 1;
+		for(int a = 0;a<cabinRoster.size();a++) {
+			for(int b = 0;b<cabinRoster.get(a).size();b++) {
+				if(smallGroupNumber < count) {
+					count = 1;
+				}
+		
+				cabinRoster.get(a).get(b).setCabin(a+1);
+				cabinRoster.get(a).get(b).setGroup(count);
+				w.writeCamper(cabinRoster.get(a).get(b));
+				count++;
+			}
+			
+		}
+		for(int a = 0;a<overflowCabin.size();a++) {
+			for(int b = 0;b<overflowCabin.get(a).size();b++) {
+				if(smallGroupNumber < count) {
+					count = 1;
+				}
+				overflowCabin.get(a).get(b).setCabin(-1);
+				overflowCabin.get(a).get(b).setGroup(count);
+				w.writeCamper(overflowCabin.get(a).get(b));
+				count++;
+			}
+			
+		}
+		try {
+			w.endSpreadsheet();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void fullProgram() {
+		chunkMaker();
+		cabinAssigner(2);
+	}
+	
 
 	public static void main(String[] args) {
 		// Creates an ArrayList of campers.
 		// It will be a for loop soon, but i'm still unsure on the input.
 		ArrayList<Camper> campers = new ArrayList<Camper>(0);
 
-		campers.add(new Camper("b", "a", 1, 8));
-		campers.add(new Camper("a", "c", 1, 8));
-		campers.add(new Camper("c", "a", 1, 8));
-		campers.add(new Camper("d", "s", 1, 8));
-		campers.add(new Camper("e", "f", 1, 8));
-		campers.add(new Camper("g", "h", 1, 8));
-		campers.add(new Camper("h", "b", 1, 8));
-		campers.add(new Camper("j", "c", 1, 8));
-		campers.add(new Camper("k", "a", 1, 8));
-		campers.add(new Camper("l", "c", 1, 8));
+		
+		campers.add(new Camper("Bruce", "Wilson", 1, 8));
+		campers.add(new Camper("Lenny", "", 1, 8));
+		campers.add(new Camper("Sam", "Tim", 1, 8));
+		campers.add(new Camper("Marco", "", 1, 8));
+		campers.add(new Camper("Parker", "", 1, 8));
+		campers.add(new Camper("Judson", "", 1, 8));
+		campers.add(new Camper("Tim", "Lenny", 1, 8));
+		campers.add(new Camper("Larry", "", 1, 8));
+		campers.add(new Camper("Sammy", "", 1, 8));
+		campers.add(new Camper("Wilson", "", 1, 8));
+		campers.add(new Camper("Evans", "", 1, 8));
+		
+		campers.add(new Camper("Sarah", "", 2, 8));
+		campers.add(new Camper("Haley", "", 2, 8));
+		campers.add(new Camper("Annie", "", 2, 8));
+		campers.add(new Camper("Virginia", "", 2, 8));
+		campers.add(new Camper("Caroline", "", 2, 8));
+		campers.add(new Camper("Kate", "", 2, 8));
+		campers.add(new Camper("Judy", "", 2, 8));
+		campers.add(new Camper("Samantha", "", 2, 8));
+		campers.add(new Camper("Blaire", "", 2, 8));
+		campers.add(new Camper("Gracie", "", 2, 8));
+		campers.add(new Camper("Emma", "", 2, 8));
+		
 
 		Manager addie = new Manager(campers);
-		addie.chunkMaker();
+	
+		addie.fullProgram();
 	}
 
 }

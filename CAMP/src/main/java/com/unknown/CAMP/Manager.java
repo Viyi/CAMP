@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Manager {
 
@@ -23,7 +24,7 @@ public class Manager {
 		totalCampers = fullRoster.size();
 		maleCabins = 4;
 		femaleCabins = 4;
-		cabinMax = 10;
+		cabinMax = 11;
 		smallGroupNumber = 8;
 	}
 	
@@ -53,7 +54,7 @@ public class Manager {
 	}
 
 	public void parseFile(String path) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader("file.txt"));
+		BufferedReader br = new BufferedReader(new FileReader(path));
 		try {
 		    StringBuilder sb = new StringBuilder();
 		    String line = br.readLine();
@@ -62,6 +63,11 @@ public class Manager {
 		        sb.append(line);
 		        sb.append(System.lineSeparator());
 		        line = br.readLine();
+		        if(line == null) {
+		        	break;
+		        }
+		        System.out.println(line);
+		        
 		    }
 		    String everything = sb.toString();
 		} finally {
@@ -141,7 +147,12 @@ public class Manager {
 			} else {
 				Collections.sort(tempChunks, new Comparator<ArrayList>(){
 				    public int compare(ArrayList a1, ArrayList a2) {
-				        return a2.size() - a1.size(); // assumes you want biggest to smallest
+				        if(a2.size() - a1.size() == 0) {
+				        	int random = ThreadLocalRandom.current().nextInt(-totalCampers, totalCampers + 1);
+				        	return random;
+				        	
+				        }
+				    	return a2.size() - a1.size(); // assumes you want biggest to smallest
 				    }
 				});
 				System.out.println("Sorted Chunk: " + (a+1) + "" + tempChunks);
@@ -157,17 +168,18 @@ public class Manager {
 			tempChunks = femaleChunks;
 		}
 		cabinRoster.addAll(temp);
-		setCamperInfo();
+		
 
 	}
 	
 	public ArrayList<ArrayList<Camper>> cabinCreator(ArrayList<ArrayList<Camper>> chunks){
 		ArrayList<ArrayList<Camper>> temp = new ArrayList<ArrayList<Camper>>(0);
+		ArrayList<ArrayList<Camper>> tempOverflow = new ArrayList<ArrayList<Camper>>(0);
 		if(chunks.isEmpty()) {
 			return temp;
 		}
 		int tempGender = chunks.get(0).get(0).getGender();
-		
+		int giveUp = 0;
 		int cabinCount = 0;
 		int ascending = 1;
 		
@@ -182,7 +194,7 @@ public class Manager {
 				cabinCount = temp.get(count).size();
 				
 				if(cabinCount + chunks.get(0).size() >= cabinMax) {
-					overflowCabin.add(chunks.remove(0));
+					tempOverflow.add(chunks.remove(0));
 					System.out.println("Thow Cup Runneth Over.");
 				}else {
 					temp.get(count).addAll(chunks.remove(0));
@@ -201,6 +213,26 @@ public class Manager {
 					count--;
 				}
 			}
+			System.out.println(tempOverflow);
+			while(!tempOverflow.isEmpty()) {
+				for(int b = 0;b<temp.size();b++) {
+					if(tempOverflow.isEmpty()) {
+						break;
+					}
+				System.out.println(tempOverflow.get(0).get(0).getName());
+					cabinCount = temp.get(b).size();
+					if(cabinCount + tempOverflow.get(0).size() <= cabinMax) {
+						System.out.println(cabinCount + tempOverflow.get(0).size() + tempOverflow.get(0).get(0).getName() + b);
+						temp.get(b).addAll(tempOverflow.remove(0));
+						b = 0;
+					}
+				}
+				if(!tempOverflow.isEmpty()) {
+					overflowCabin.add(tempOverflow.remove(0));
+				}
+				
+			}
+			
 		}else {
 			int count = femaleCabins - 1;
 			for(int a = 0;a<femaleCabins;a++) {
@@ -211,7 +243,7 @@ public class Manager {
 				cabinCount = temp.get(count).size();
 				
 				if(cabinCount + chunks.get(0).size() >= cabinMax) {
-					overflowCabin.add(chunks.remove(0));
+					tempOverflow.add(chunks.remove(0));
 					System.out.println("Thow Cup Runneth Over.");
 				}else {
 					temp.get(count).addAll(chunks.remove(0));
@@ -230,13 +262,32 @@ public class Manager {
 					count--;
 				}
 			}
+			System.out.println(tempOverflow);
+			while(!tempOverflow.isEmpty()) {
+				for(int b = 0;b<temp.size();b++) {
+					if(tempOverflow.isEmpty()) {
+						break;
+					}
+				System.out.println(tempOverflow.get(0).get(0).getName());
+					cabinCount = temp.get(b).size();
+					if(cabinCount + tempOverflow.get(0).size() <= cabinMax) {
+						System.out.println(cabinCount + tempOverflow.get(0).size() + tempOverflow.get(0).get(0).getName() + b);
+						temp.get(b).addAll(tempOverflow.remove(0));
+						b = 0;
+					}
+				}
+				if(!tempOverflow.isEmpty()) {
+					overflowCabin.add(tempOverflow.remove(0));
+				}
+				
+			}
 		}
 		
 		
 		return temp;
 	}
 
-	public void setCamperInfo() {
+	public void setCamperInfo(String fName) {
 		Writer w = new Writer();
 		int count = 1;
 		for(int a = 0;a<cabinRoster.size();a++) {
@@ -265,16 +316,17 @@ public class Manager {
 			
 		}
 		try {
-			w.endSpreadsheet();
+			w.endSpreadsheet(fName + ".xls");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void fullProgram() {
+	public void fullProgram(String fName) {
 		chunkMaker();
 		cabinAssigner(2);
+		setCamperInfo(fName);
 	}
 	
 
@@ -284,20 +336,53 @@ public class Manager {
 		ArrayList<Camper> campers = new ArrayList<Camper>(0);
 
 		
-		campers.add(new Camper("Bruce", "Wilson", 1, 8));
-		campers.add(new Camper("Lenny", "", 1, 8));
-		campers.add(new Camper("Sam", "Tim", 1, 8));
-		campers.add(new Camper("Marco", "", 1, 8));
-		campers.add(new Camper("Parker", "", 1, 8));
-		campers.add(new Camper("Judson", "", 1, 8));
-		campers.add(new Camper("Tim", "Lenny", 1, 8));
-		campers.add(new Camper("Larry", "", 1, 8));
-		campers.add(new Camper("Sammy", "", 1, 8));
-		campers.add(new Camper("Wilson", "", 1, 8));
-		campers.add(new Camper("Evans", "", 1, 8));
+		campers.add(new Camper("Bruce", "Wilson", 2, 8));
+		campers.add(new Camper("Lenny", "", 2, 8));
+		campers.add(new Camper("Sam", "Tim", 2, 8));
+		campers.add(new Camper("Marco", "", 2, 8));
+		campers.add(new Camper("Parker", "", 2, 8));
+		campers.add(new Camper("Judson", "", 2, 8));
+		campers.add(new Camper("Tim", "Lenny", 2, 8));
+		campers.add(new Camper("Larry", "", 2, 8));
+		campers.add(new Camper("Sammy", "", 2, 8));
+		campers.add(new Camper("Wilson", "", 2, 8));
+		campers.add(new Camper("Evans", "", 2, 8));
+		campers.add(new Camper("Jim", "Wilson", 2, 8));
+		campers.add(new Camper("Sage", "", 2, 8));
+		campers.add(new Camper("Bailey", "Tim", 2, 8));
+		campers.add(new Camper("Arthur", "", 2, 8));
+		campers.add(new Camper("Matthew", "", 2, 8));
+		campers.add(new Camper("Tiny", "", 2, 8));
+		campers.add(new Camper("Conan", "Lenny", 2, 8));
+		campers.add(new Camper("Norm", "", 2, 8));
+		campers.add(new Camper("Saske", "", 2, 8));
+		campers.add(new Camper("Kirito", "", 2, 8));
+		campers.add(new Camper("Wade", "", 2, 8));
+		campers.add(new Camper("William", "Wilson", 2, 8));
+		campers.add(new Camper("John", "", 2, 8));
+		campers.add(new Camper("David", "Tim", 2, 8));
+		campers.add(new Camper("William", "", 2, 8));
+		campers.add(new Camper("Jarod", "", 2, 8));
+		campers.add(new Camper("Emil", "", 2, 8));
+		campers.add(new Camper("Roderick", "Lenny", 2, 8));
+		campers.add(new Camper("Elroy", "", 2, 8));
+		campers.add(new Camper("Gil", "", 2, 8));
+		campers.add(new Camper("Len", "", 2, 8));
+		campers.add(new Camper("Cruz", "", 2, 8));
+		campers.add(new Camper("Lamar", "Wilson", 2, 8));
+		campers.add(new Camper("Johnson", "", 2, 8));
+		campers.add(new Camper("Rubin", "Tim", 2, 8));
+		campers.add(new Camper("Korey", "", 2, 8));
+		campers.add(new Camper("Dion", "", 2, 8));
+		campers.add(new Camper("Cornell", "", 1, 8));
+		campers.add(new Camper("Emile", "Lenny", 1, 8));
+		campers.add(new Camper("Rocky", "", 1, 8));
+		campers.add(new Camper("Bobby", "", 1, 8));
+		campers.add(new Camper("Marshall", "", 1, 8));
+		campers.add(new Camper("Wade", "", 1, 8));
 		
-		campers.add(new Camper("Sarah", "", 2, 8));
-		campers.add(new Camper("Haley", "", 2, 8));
+		campers.add(new Camper("Sarah", "Judy", 2, 8));
+		campers.add(new Camper("Haley", "Judy", 2, 8));
 		campers.add(new Camper("Annie", "", 2, 8));
 		campers.add(new Camper("Virginia", "", 2, 8));
 		campers.add(new Camper("Caroline", "", 2, 8));
@@ -311,7 +396,7 @@ public class Manager {
 
 		Manager addie = new Manager(campers);
 	
-		addie.fullProgram();
+		addie.fullProgram("TestFile");
 	}
 
 }

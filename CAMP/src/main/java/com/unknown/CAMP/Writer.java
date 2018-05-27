@@ -19,8 +19,8 @@ public class Writer {
          rowhead.createCell(4).setCellValue("Small Group");
 	}
 	
-	public void endSpreadsheet() throws Exception {
-		String filename = "NewExelFile.xls" ;
+	public void endSpreadsheet(String fName) throws Exception {
+		String filename = fName ;
 		
 		FileOutputStream fileOut = new FileOutputStream(filename);
 
@@ -53,7 +53,7 @@ public class Writer {
 	       w.writeCamper(null);
 	       w.writeCamper(null);
 	       try {
-			w.endSpreadsheet();
+		//	w.endSpreadsheet();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

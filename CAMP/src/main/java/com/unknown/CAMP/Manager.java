@@ -1,5 +1,10 @@
 package com.unknown.CAMP;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +26,24 @@ public class Manager {
 		cabinMax = 10;
 		smallGroupNumber = 8;
 	}
+	
+	public Manager(ArrayList<Camper> a, int cm,int sg, int mc, int fc) {
+		fullRoster = a;
+		//totalCampers = fullRoster.size();
+		maleCabins = mc;
+		femaleCabins = fc;
+		cabinMax = cm;
+		smallGroupNumber = sg;
+		
+	}
+	
+	public Manager() {
+		maleCabins = 4;
+		femaleCabins = 4;
+		cabinMax = 10;
+		smallGroupNumber = 8;
+	}
+	
 
 	public Manager(ArrayList<Camper> a, int mcabins, int fcabins) {
 		fullRoster = a;
@@ -29,6 +52,22 @@ public class Manager {
 		totalCampers = fullRoster.size();
 	}
 
+	public void parseFile(String path) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader("file.txt"));
+		try {
+		    StringBuilder sb = new StringBuilder();
+		    String line = br.readLine();
+
+		    while (line != null) {
+		        sb.append(line);
+		        sb.append(System.lineSeparator());
+		        line = br.readLine();
+		    }
+		    String everything = sb.toString();
+		} finally {
+		    br.close();
+		}
+	}
 	public int chunkMaker() {
 		/*
 		 * woah, that is some spaghetti code! Let's talk through it Summary: Creates a

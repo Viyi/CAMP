@@ -107,7 +107,9 @@ public class Viewer {
 				fileName = textField.getText();
 				Manager addie = new Manager(null,(int)sp_cabinMax.getValue(),(int)sp_smallGroup.getValue(),(int)sp_maleCabins.getValue(),(int)sp_femaleCabins.getValue());
 				try {
+					System.out.println(filePath);
 					addie.parseFile(filePath);
+					addie.fullProgram(fileName);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

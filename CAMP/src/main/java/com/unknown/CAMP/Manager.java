@@ -12,7 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Manager {
 
-	private ArrayList<Camper> fullRoster;
+	
+	public ArrayList<Camper> fullRoster;
 	private ArrayList<ArrayList<Camper>> cabinRoster = new ArrayList<ArrayList<Camper>>(0);
 	private ArrayList<ArrayList<Camper>> overflowCabin = new ArrayList<ArrayList<Camper>>(0);
 	private ArrayList<ArrayList<Camper>> femaleChunks = new ArrayList<ArrayList<Camper>>(0);
@@ -53,24 +54,65 @@ public class Manager {
 		totalCampers = fullRoster.size();
 	}
 
+	public Camper camperCreator(String line) {
+		String n;
+		String r;
+		int ge;
+		
+		n = line.substring(0, line.indexOf("-"));
+		if(line.substring(line.indexOf("-"),line.indexOf("-") +2 ).equals("1")) {
+			ge = 1;
+		}else {
+			ge = 2;
+		}
+		r = line.substring(line.indexOf("-") + 2,line.length()); 
+	   
+		Camper c = new Camper(n,r,ge);
+		 
+	    return c;
+	}
 	public void parseFile(String path) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(path));
+		ArrayList<Camper> camperList = new ArrayList<Camper>(0);
 		try {
 		    StringBuilder sb = new StringBuilder();
 		    String line = br.readLine();
 
 		    while (line != null) {
-		        sb.append(line);
+		       try{
+		    	   line.indexOf("-");
+		       }catch(Exception e) {
+		    	   break;
+		       }
+		    	sb.append(line);
 		        sb.append(System.lineSeparator());
 		        line = br.readLine();
+		     
 		        if(line == null) {
 		        	break;
 		        }
+		        String n;
+				String r;
+				int ge;
+			
+				n = line.substring(0, line.indexOf("-"));
+				if(line.substring(line.indexOf("-")+1,line.indexOf("-") +2 ).equals("1")) {
+					ge = 1;
+				}else {
+					
+					ge = 2;
+				}
+				r = line.substring(line.indexOf("-") + 2,line.length()); 
+			   
+				Camper c = new Camper(n,r,ge);
+				camperList.add(c);
 		        System.out.println(line);
 		        
 		    }
-		    String everything = sb.toString();
+		    
 		} finally {
+			//totalCampers = fullRoster.size();
+			fullRoster = camperList;
 		    br.close();
 		}
 	}
@@ -105,10 +147,13 @@ public class Manager {
 			}
 			for (int a = 0; a < fullRoster.size(); a++) {
 				// checks to see if the current persons request is available
-				if (fullRoster.get(a).getName().equals(temp.get(count).getRequest())
-						&& fullRoster.get(a).getGender() == temp.get(count).getGender()) {
-					temp.add(fullRoster.remove(a));
-					a--;
+				
+				if (fullRoster.get(a).getName().equals(temp.get(count).getRequest()) || fullRoster.get(a).getName().equals(temp.get(count).getRequest2())){
+					if(fullRoster.get(a).getGender() == temp.get(count).getGender()) {
+						temp.add(fullRoster.remove(a));
+						a--;
+					}
+					
 				}
 			}
 			count++;
@@ -119,7 +164,7 @@ public class Manager {
 			// runs it again
 			return chunkMaker();
 		} else if (temp.get(0).getGender() == 2) {
-			System.out.println("Female");
+			
 			femaleChunks.add(temp);
 			// runs it again
 			return chunkMaker();
@@ -336,62 +381,6 @@ public class Manager {
 		ArrayList<Camper> campers = new ArrayList<Camper>(0);
 
 		
-		campers.add(new Camper("Bruce", "Wilson", 2, 8));
-		campers.add(new Camper("Lenny", "", 2, 8));
-		campers.add(new Camper("Sam", "Tim", 2, 8));
-		campers.add(new Camper("Marco", "", 2, 8));
-		campers.add(new Camper("Parker", "", 2, 8));
-		campers.add(new Camper("Judson", "", 2, 8));
-		campers.add(new Camper("Tim", "Lenny", 2, 8));
-		campers.add(new Camper("Larry", "", 2, 8));
-		campers.add(new Camper("Sammy", "", 2, 8));
-		campers.add(new Camper("Wilson", "", 2, 8));
-		campers.add(new Camper("Evans", "", 2, 8));
-		campers.add(new Camper("Jim", "Wilson", 2, 8));
-		campers.add(new Camper("Sage", "", 2, 8));
-		campers.add(new Camper("Bailey", "Tim", 2, 8));
-		campers.add(new Camper("Arthur", "", 2, 8));
-		campers.add(new Camper("Matthew", "", 2, 8));
-		campers.add(new Camper("Tiny", "", 2, 8));
-		campers.add(new Camper("Conan", "Lenny", 2, 8));
-		campers.add(new Camper("Norm", "", 2, 8));
-		campers.add(new Camper("Saske", "", 2, 8));
-		campers.add(new Camper("Kirito", "", 2, 8));
-		campers.add(new Camper("Wade", "", 2, 8));
-		campers.add(new Camper("William", "Wilson", 2, 8));
-		campers.add(new Camper("John", "", 2, 8));
-		campers.add(new Camper("David", "Tim", 2, 8));
-		campers.add(new Camper("William", "", 2, 8));
-		campers.add(new Camper("Jarod", "", 2, 8));
-		campers.add(new Camper("Emil", "", 2, 8));
-		campers.add(new Camper("Roderick", "Lenny", 2, 8));
-		campers.add(new Camper("Elroy", "", 2, 8));
-		campers.add(new Camper("Gil", "", 2, 8));
-		campers.add(new Camper("Len", "", 2, 8));
-		campers.add(new Camper("Cruz", "", 2, 8));
-		campers.add(new Camper("Lamar", "Wilson", 2, 8));
-		campers.add(new Camper("Johnson", "", 2, 8));
-		campers.add(new Camper("Rubin", "Tim", 2, 8));
-		campers.add(new Camper("Korey", "", 2, 8));
-		campers.add(new Camper("Dion", "", 2, 8));
-		campers.add(new Camper("Cornell", "", 1, 8));
-		campers.add(new Camper("Emile", "Lenny", 1, 8));
-		campers.add(new Camper("Rocky", "", 1, 8));
-		campers.add(new Camper("Bobby", "", 1, 8));
-		campers.add(new Camper("Marshall", "", 1, 8));
-		campers.add(new Camper("Wade", "", 1, 8));
-		
-		campers.add(new Camper("Sarah", "Judy", 2, 8));
-		campers.add(new Camper("Haley", "Judy", 2, 8));
-		campers.add(new Camper("Annie", "", 2, 8));
-		campers.add(new Camper("Virginia", "", 2, 8));
-		campers.add(new Camper("Caroline", "", 2, 8));
-		campers.add(new Camper("Kate", "", 2, 8));
-		campers.add(new Camper("Judy", "", 2, 8));
-		campers.add(new Camper("Samantha", "", 2, 8));
-		campers.add(new Camper("Blaire", "", 2, 8));
-		campers.add(new Camper("Gracie", "", 2, 8));
-		campers.add(new Camper("Emma", "", 2, 8));
 		
 
 		Manager addie = new Manager(campers);

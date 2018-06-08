@@ -3,7 +3,7 @@ package com.unknown.CAMP;
 
 public class Camper {
 	
-	private String name,request;
+	private String name,request,request2;
 	//gender is based on number of x chromosome, 1:male 2:female
 	private int gender,grade,cabin,group;
 	public Camper() {
@@ -13,11 +13,23 @@ public class Camper {
 		request = "Christian Mulligan";
 	}
 	
-	public Camper(String n, String r, int ge, int gr) {
-		name = n;
+	public Camper(String n, String r, int ge) {
+		name = n.toLowerCase();
 		gender = ge;
-		grade = gr;	
-		request = r;
+		grade = -1;
+		r = r.toLowerCase().trim();
+		if(r.startsWith("-")) {
+			r = r.substring(1,r.length());
+		}
+		System.out.println("camper class r = " + r);
+		if(!r.contains("-")) {
+			request = r;
+		}else {
+			request = r.substring(0, r.indexOf("-"));
+			request2 = r.substring(r.indexOf("-")+1,r.length());
+			System.out.println("Request: " + request + "Request 2: "  +request2);
+		}
+		
 	}
 	
 	
@@ -33,9 +45,14 @@ public class Camper {
 	public String getRequest() {
 		return request;
 	}
-
+	public String getRequest2() {
+		return request2;
+	}
 	public void setRequest(String request) {
 		this.request = request;
+	}
+	public void setRequest2(String request2) {
+		this.request = request2;
 	}
 
 	public int getGender() {

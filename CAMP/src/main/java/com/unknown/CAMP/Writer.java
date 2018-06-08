@@ -14,9 +14,10 @@ public class Writer {
          HSSFRow rowhead = sheet.createRow((short)0);
          rowhead.createCell(0).setCellValue("Name");
          rowhead.createCell(1).setCellValue("Gender");
-         rowhead.createCell(2).setCellValue("Grade");
-         rowhead.createCell(3).setCellValue("Cabin");
-         rowhead.createCell(4).setCellValue("Small Group");
+         rowhead.createCell(2).setCellValue("Cabin");
+         rowhead.createCell(3).setCellValue("Small Group");
+         rowhead.createCell(4).setCellValue("First Request");
+         rowhead.createCell(5).setCellValue("Second Request");
 	}
 	
 	public void endSpreadsheet(String fName) throws Exception {
@@ -40,9 +41,11 @@ public class Writer {
         	 row.createCell(1).setCellValue("Male");
          }
          
-         row.createCell(2).setCellValue(c.getGrade());
-         row.createCell(3).setCellValue(c.getCabin());
-         row.createCell(4).setCellValue(c.getGroup());
+        
+         row.createCell(2).setCellValue(c.getCabin());
+         row.createCell(3).setCellValue(c.getGroup());
+         row.createCell(4).setCellValue(c.getRequest());
+         row.createCell(5).setCellValue(c.getRequest2());
          rowNum++;
 	}
 	

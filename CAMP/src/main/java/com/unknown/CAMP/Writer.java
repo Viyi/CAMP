@@ -32,8 +32,12 @@ public class Writer {
 	
 	public void writeCamper(Camper c) {
 		
+		
 		HSSFRow row = sheet.createRow((short)rowNum);
-         row.createCell(0).setCellValue(c.getName());
+        if(c!=null) {
+        	row.createCell(0).setCellValue(c.getName());
+        
+		
          if(c.getGender() == 2) {
         	 row.createCell(1).setCellValue("Female");
          }else {
@@ -44,6 +48,7 @@ public class Writer {
          row.createCell(3).setCellValue(c.getCabin());
          row.createCell(4).setCellValue(c.getGroup());
          rowNum++;
+        }
 	}
 	
 	
@@ -53,7 +58,7 @@ public class Writer {
 	       w.writeCamper(null);
 	       w.writeCamper(null);
 	       try {
-		//	w.endSpreadsheet();
+			w.endSpreadsheet("test9976");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

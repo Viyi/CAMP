@@ -15,6 +15,17 @@
   </properties>
 
  <dependencies>
+ <!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms -->
+<dependency>
+    <groupId>com.jgoodies</groupId>
+    <artifactId>jgoodies-forms</artifactId>
+    <version>1.8.0</version>
+</dependency>
+ <dependency>
+    <groupId>org.ow2.chameleon.commons.miglayout</groupId>
+    <artifactId>miglayout-swing</artifactId>
+    <version>3.7.3.1-0000</version>
+</dependency>
     <dependency>
         <groupId>com.google.gdata</groupId>
         <artifactId>core</artifactId>

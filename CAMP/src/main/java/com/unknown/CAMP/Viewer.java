@@ -105,9 +105,10 @@ public class Viewer {
 		btnCreateCabins.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				fileName = textField.getText();
-				Manager addie = new Manager(null,(int)sp_cabinMax.getValue(),(int)sp_smallGroup.getValue(),(int)sp_maleCabins.getValue(),(int)sp_femaleCabins.getValue());
+				Manager addie = new Manager(null,(Integer)sp_cabinMax.getValue(),(Integer)sp_smallGroup.getValue(),(Integer)sp_maleCabins.getValue(),(Integer)sp_femaleCabins.getValue());
 				try {
 					addie.parseFile(filePath);
+					addie.fullProgram(textField.getText());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
